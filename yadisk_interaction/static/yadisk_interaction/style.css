@@ -103,10 +103,14 @@ h1 {
     margin-left: 40px;
 }
 
-#back-link {
+.back-link {
     text-decoration: none;
     color: black;
 }
 #logout {
     font-weight: bold;
+}
+
+#download_err {
+    margin-left: 120px;
 }

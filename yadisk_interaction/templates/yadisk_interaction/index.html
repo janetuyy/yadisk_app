@@ -11,6 +11,7 @@
     <div id="header">
         <a class="logo">Yandex Disk Application</a>
     </div>
+    {% block content %}
     {% if not public_key_received %}
         <form id="link-to-resource" method="post">
             {% csrf_token %}
@@ -21,7 +22,7 @@
     {% else %}
         <div id="menu">
             <h1 id="your-files">Your files</h1>
-            <button id="back"><a id="back-link" href="javascript:history.back()">Back</a></button>
+            <button id="back"><a class="back-link" href="javascript:history.back()">Back</a></button>
             <form method="post">
                 {% csrf_token %}
                 {{ another_form.as_p }}
@@ -55,6 +56,7 @@
         {% endfor %}
         </ul>
     {% endif %}
+    {% endblock %}
 <footer>
     <p>Yandex Disk Application ©2024.</p>
 </footer>

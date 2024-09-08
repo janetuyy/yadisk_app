@@ -1,15 +1,22 @@
+{% extends "yadisk_interaction/index.html" %}
+{% load static %}
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Download Result</title>
 </head>
 <body>
-    <h1>Download Result</h1>
-    {% if link %}
-        <p>Download link: <a href="{{ link }}">{{ link }}</a></p>
-    {% else %}
-        <p>{{ error }}</p>
-    {% endif %}
-    <a href="javascript:history.back()">Back to Download Form</a>
+    {% block content %}
+    <div id="download_err">
+        <h1>Download Result</h1>
+        {% if link %}
+            <p>Download link: <a href="{{ link }}">{{ link }}</a></p>
+        {% else %}
+            <p>{{ error }}</p>
+        {% endif %}
+        <button><a class="back-link" href="javascript:history.back()">Back</a></button>
+    </div>
+    {% endblock %}
 </body>
 </html>
