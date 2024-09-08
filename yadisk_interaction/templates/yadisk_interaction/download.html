@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download Result</title>
+</head>
+<body>
+    <h1>Download Result</h1>
+    {% if link %}
+        <p>Download link: <a href="{{ link }}">{{ link }}</a></p>
+    {% else %}
+        <p>{{ error }}</p>
+    {% endif %}
+    <a href="javascript:history.back()">Back to Download Form</a>
+</body>
+</html>

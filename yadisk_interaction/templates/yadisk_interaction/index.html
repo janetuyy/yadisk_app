@@ -9,11 +9,12 @@
 </head>
 <body>
     <div id="header">
-        <a href="{% url 'yadisk_interaction:main' %}" class="logo">Yandex Disk Application</a>
+        <a class="logo">Yandex Disk Application</a>
     </div>
     {% if not public_key_received %}
         <form method="post">
             {% csrf_token %}
+            <h1>Link to your resource:</h1>
             {{ form.as_p }}
 <!--            <input type="text" name="public_key" placeholder="Enter the link to the resource" value="{{ public_key }}" required>-->
             <button type="submit">Go to files</button>
@@ -21,7 +22,6 @@
     {% else %}
         <div id="menu">
             <h1>Your files</h1>
-            <button>Download</button>
             <form method="post">
                 {% csrf_token %}
                 {{ another_form.as_p }}
@@ -31,9 +31,20 @@
         <ul class="file-list">
         {% for item in files_and_folders %}
             <li>
-                <div><img src="{{ item.preview }}"></div>
-                <div>Name: {{ item.name }}</div>
-                <div>Type: {{ item.type }}</div>
+                {% if item.type == 'file' %}
+                    <div><img src="{{ item.preview }}"></div>
+                    <div>Name: {{ item.name }}</div>
+                    <form action="{% url 'yadisk_interaction:download' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="download" value="{{ item.path }}">
+                        <input type="hidden" name="public_key" value="{{ public_key }}">
+                        <button type="submit">Download</button>
+                    </form>
+                {% endif %}
+                {% if item.type == 'dir' %}
+                    <div><img src="{% static 'yadisk_interaction/folder2.png' %}"></div>
+                    <div>Name: {{ item.name }}</div>
+                {% endif %}
             </li>
         {% endfor %}
         </ul>

@@ -1,4 +1,5 @@
 import requests
+from django.http import HttpResponse
 from django.shortcuts import render
 from typing import List, Dict, Any
 
@@ -7,7 +8,7 @@ from yadisk_interaction.forms import PublicKeyForm, AnotherForm
 
 def get_all_files(public_key: str) -> List[Dict[str, Any]]:
     """
-    функция просмотра содержимого удаленного ресурса
+    функция получения содержимого удаленного ресурса
     """
     url = (
         f"https://cloud-api.yandex.net/v1/disk/public/resources?public_key={public_key}"
@@ -27,9 +28,45 @@ def get_all_files(public_key: str) -> List[Dict[str, Any]]:
         return []
 
 
+def download_files(request) -> Dict[str, Any]:
+    """
+    функция скачивания файлов удаленного ресурса
+    """
+    if request.method == "POST":
+        path = request.POST.get("download")
+        public_key = request.POST.get("public_key")
+        print(public_key)
+        download_url = f"https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key={public_key}&path={path}"
+        headers = {
+            "Authorization": "y0_AgAAAAAWZ9fnAAxg3wAAAAEP4FZdAAAq_KWXPvlJMrOBbr-c0ch6HryEPQ",
+        }
+        response = requests.get(download_url, headers=headers)
+        if response.status_code == 200:
+            link = response.json().get("href")
+            file_response = requests.get(link, stream=True)
+            if file_response.status_code == 200:
+                file_name = path.split("/")[-1]  # Извлекаем имя файла из пути
+                response = HttpResponse(
+                    file_response.content, content_type="application/octet-stream"
+                )
+                response["Content-Disposition"] = f'attachment; filename="{file_name}"'
+                return response
+    else:
+        return render(
+            request,
+            "yadisk_interaction/download.html",
+            {"error": "Failed to download files"},
+        )
+    return render(
+        request,
+        "yadisk_interaction/download.html",
+        {"error": "Failed to download files"},
+    )
+
+
 def yandex_disk_view(request):
     """
-    основная функция взаимодействия с содержимым удаленного ресурса
+    функция просмотра с содержимого удаленного ресурса
     """
     if request.method == "POST":
         form = PublicKeyForm(request.POST)
@@ -44,6 +81,7 @@ def yandex_disk_view(request):
                     "files_and_folders": files_and_folders,
                     "form": form,
                     "public_key_received": True,
+                    "public_key": public_key,
                 },
             )
         elif another_form.is_valid():

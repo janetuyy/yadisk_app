@@ -9,7 +9,9 @@ class PublicKeyForm(forms.Form):
     public_key = forms.URLField(
         label="",
         required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter public key'})
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "Enter public key"}
+        ),
     )
 
 
