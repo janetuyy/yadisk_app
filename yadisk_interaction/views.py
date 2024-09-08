@@ -6,13 +6,11 @@ from typing import List, Dict, Any
 from yadisk_interaction.forms import PublicKeyForm, AnotherForm
 
 
-def get_all_files(public_key: str) -> List[Dict[str, Any]]:
+def get_all_files(public_key: str, path: str = "") -> List[Dict[str, Any]]:
     """
     функция получения содержимого удаленного ресурса
     """
-    url = (
-        f"https://cloud-api.yandex.net/v1/disk/public/resources?public_key={public_key}"
-    )
+    url = f"https://cloud-api.yandex.net/v1/disk/public/resources?public_key={public_key}&path={path}"
     headers = {
         "Authorization": "y0_AgAAAAAWZ9fnAAxg3wAAAAEP4FZdAAAq_KWXPvlJMrOBbr-c0ch6HryEPQ",
     }
@@ -51,12 +49,12 @@ def download_files(request) -> Dict[str, Any]:
                 )
                 response["Content-Disposition"] = f'attachment; filename="{file_name}"'
                 return response
-    else:
-        return render(
-            request,
-            "yadisk_interaction/download.html",
-            {"error": "Failed to download files"},
-        )
+        else:
+            return render(
+                request,
+                "yadisk_interaction/download.html",
+                {"error": "Failed to download files"},
+            )
     return render(
         request,
         "yadisk_interaction/download.html",
@@ -73,7 +71,8 @@ def yandex_disk_view(request):
         another_form = AnotherForm(request.POST)
         if form.is_valid():
             public_key = form.cleaned_data["public_key"]
-            files_and_folders = get_all_files(public_key)
+            path = request.POST.get("path", "")
+            files_and_folders = get_all_files(public_key, path)
             return render(
                 request,
                 "yadisk_interaction/index.html",
@@ -82,6 +81,7 @@ def yandex_disk_view(request):
                     "form": form,
                     "public_key_received": True,
                     "public_key": public_key,
+                    "path": path,
                 },
             )
         elif another_form.is_valid():
