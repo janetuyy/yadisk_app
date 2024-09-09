@@ -26,7 +26,7 @@ def get_all_files(public_key: str, path: str = "") -> List[Dict[str, Any]]:
         return []
 
 
-def download_files(request) -> Dict[str, Any]:
+def download_files(request) -> HttpResponse:
     """
     функция скачивания файлов удаленного ресурса
     """
